@@ -3,6 +3,33 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
+import datetime
+import sqlite3
+import re
+
+DBName = "TEST.db"
+
+con = sqlite3.connect(DBName)
+cur = con.cursor()
+try:
+    # Userを登録するテーブル
+    cur.execute("""CREATE TABLE Users (Name text, ID blog, Password blog)""")
+    cur.execute("INSERT INTO Users VALUES('User', 1, 1)")
+except:
+    pass
+try:
+    # すべての記録を登録しておくテーブル
+    cur.execute("""CREATE TABLE AllRecords (ID integer, Title text, Amount integer, ClaimPer integer, Details text, Path text, User text, Year integer, month integer, day integer)""")
+except:
+    pass
+# 以下予備。
+# try:
+#     # Table作成をやってみる。
+#     cur.execute("""CREATE TABLE AllTasks (ID integer, Name text, Details text, ParentsTask integer, Repetition integer, Repetition2 integer, Repetition3 text, TimeRequired integer, Power integer, ICOrule integer)""")
+# except:
+#     pass
+con.commit()
+con.close()
 
 
 
@@ -108,100 +135,20 @@ class Language():
         self.SettingsConfirmButtonText = "確認"
         # 設定画面のユーザーネームのところのテキスト
         self.SettingsUserLabelText = "ユーザー名"
-
+        # ユーザー1の名前
+        self.RegistUser1 = "ユーザー1："
+        # ユーザー2の名前
+        self.RegistUser2 = "ユーザー2："
+        # 登録画面のタイトル未入力時のエラーメッセージ
+        self.RegistTitleErrorMessage = "タイトルが未入力です。"
+        # 登録画面の金額未入力時のエラーメッセージ
+        self.RegistAmountErrorMessage = "金額が未入力です。"
+        # 登録画面の書き込みOKメッセージ
+        self.RegistOK = "完了しました。"
     def English(self):
         pass
     def Tame(self):
-        # メインウインドウのタイトル
-        self.title = "払う額をしらべるやつ"
-        # 認証画面のタイトル
-        self.AuthWindowTitle = "あいことばみたいなことする"
-        # 認証画面の確認ボタンのテキスト
-        self.AuthWindowConfirmText = "これでいけるよ"
-        # 認証画面のユーザー入力フォーム説明用のテキスト
-        self.AuthWindowUserLabelText = "おなまえをどうぞ"
-        # 認証画面のパスワード入力フォーム説明用のテキスト
-        self.AuthWindowPassLabelText = "パスワード入れてね"
-        # メインウインドウのログイン中のユーザー表示用テキスト
-        self.InformationAboutNowUserText = "あなた："
-        # メインウインドウ、支出登録ボタンのテキスト
-        self.RegistButtonText = "とーろく"
-        # メインウインドウのリスト確認と変更ボタンのテキスト
-        self.ConfirmAndEditButtonText = "みたりいじったり。"
-        # メインウインドウの清算表出力ボタンのテキスト
-        self.OutputTheSheetText = "ひょうをだすよ。"
-        # メインウインドウの設定ボタンのテキスト
-        self.SettingsText = "せってい"
-        # メインウインドウのメニューバーのファイルのテキスト
-        self.MenuBarFileText = "ふぃれ"
-        # メインウインドウのメニューバーの設定のテキスト
-        self.MenuBarSettingsText = "せってー"
-        # メインウインドウのメニューバーの言語変更のテキスト
-        self.MenuBarSettingsLangText = "ことばかえます"
-        # メインウインドウのテーマ変更のテキスト
-        self.MenuBarSettingsThemeText = "いろかえます"
-        # メインウインドウのユーザー変更のテキスト
-        self.MenuBarFileChangeUserText = "ひとかえます"
-        # メインウインドウの終了ボタンのタイトル
-        self.MenuBarFileExitText = "おわり"
-        # メインウインドウの終了確認画面のタイトル
-        self.DestroyConfirmText = "おわるけどいい？"
-        # メインウインドウの終了確認画面の詳細テキスト
-        self.DestroyConfirmDetailsText = "とじるよー！！\nよい？"
-        # 認証画面のユーザー認証成功ウインドウのタイトル
-        self.AuthPassedText = "おっけー"
-        # 認証画面のユーザー認証成功のウインドウの詳細テキスト
-        self.AuthPassedDetails = "ようこそー！\nあなた："
-        # メインウインドウのユーザー変更確認の詳細テキスト
-        self.ChangeUserConfirmDetailsText = "ログアウトするね。いい?"
-        # メインウインドウのユーザー変更確認画面のタイトル
-        self.ChangeUserConfirmText = "ぬけます"
-        # 認証画面のユーザー認証失敗のウインドウのタイトル
-        self.AuthMissedText = "ざんねん"
-        # 認証画面のユーザー認証失敗の詳細テキスト
-        self.AuthMissedDetails = "なんかまちがえてるかも\n確認してみてね"
-        # 支出登録ウインドウのタイトル
-        self.RegistWindowTitle = "とーろくがめん"
-        # 支出登録ウインドウのラベルフレームのテキスト
-        self.RegistLabelFrameText = "ぜんぶ"
-        # 支出登録ウインドウのタイトル入力フォーム用ラベルのテキスト
-        self.RegistTitleLabelText = "タイトル"
-        # 支出登録ウインドウの金額入力フォーム用ラベルのテキスト
-        self.RegistAmountLabelText = "金額"
-        # 支出登録ウインドウの割合入力フォーム用のラベルのテキスト
-        self.RegistClaimLabelText = "分配割合"
-        # 支出登録ウインドウの詳細入力フォーム用のラベルのテキスト
-        self.RegistDetailsText = "詳細情報"
-        # 支出ウインドウ、レシートパスの入力
-        self.RegistPictureSelectText = "画像を選択"
-        # 支出ウインドウ、確認ボタンのテキスト
-        self.RegistConfirmButtonText = "確認"
-        # 参照
-        self.Reference = "参照"
-        # 確認ウインドウのタイトル
-        self.CEWindowTitle = "確認、編集"
-        # 確認ウインドウの検索ラベルフレームのテキスト
-        self.CESearchFormsText = "検索フォーム"
-        # 確認ウインドウの検索月入力のためのテキスト
-        self.CEMonthEntryText = "月を入力"
-        # 検索ウインドウの検索年入力のためのテキスト
-        self.CEYearEntryText = "年を入力"
-        # 検索ウインドウの検索ボタン用のテキスト
-        self.CESearchText = "検索"
-        # 検索ウインドウの結果表示ラベルフレームのテキスト
-        self.CEResult = "検索結果"
-        # 設定ウインドウタイトル
-        self.SettingsWindowTitle = "設定"
-        # 設定画面の大枠のタイトル
-        self.SettingsFrameTitle = "設定"
-        # 設定画面のバージョン情報のテキスト
-        self.SettingsVersionText = "バージョン："
-        # 設定画面の言語ラベルのテキスト
-        self.SettingsLanguageLabelText = "言語"
-        # 設定画面の確認ボタンのテキスト
-        self.SettingsConfirmButtonText = "確認"
-        # 設定画面のユーザーネームのところのテキスト
-        self.SettingsUserLabelText = "ユーザー名"
+        pass
 
 
 # iniファイルを読み込んで、以下の設定を。
@@ -216,6 +163,7 @@ class main():
         # GUIの作成
         global root
         self.subwindow = None
+        self.UserID = userID
         root = Tk()
         root.title(lang.title)
         # ここからパーツ
@@ -262,24 +210,36 @@ class main():
         else:
             pass
     def RegistTheCash(self):
+        # 登録画面
         if self.subwindow == None or not self.subwindow.winfo_exists():
             self.subwindow = Toplevel(root)
             self.subwindow.title(lang.RegistWindowTitle)
             # ここからパーツ
+            self.ClaimValue = IntVar(value=0)
+
             labelframe = ttk.LabelFrame(self.subwindow, text = lang.RegistLabelFrameText)
             TitleLabel = ttk.Label(labelframe, text = lang.RegistTitleLabelText)
-            self.TitleEntry = ttk.Entry(labelframe)
+            self.TitleEntry = ttk.Entry(labelframe, width=40)
             AmountLabel = ttk.Label(labelframe, text= lang.RegistAmountLabelText)
-            self.AmountEntry = ttk.Entry(labelframe)
-            ClaimLabel = ttk.Label(labelframe, text = lang.RegistClaimLabelText)
-            self.ClaimEntry = ttk.LabeledScale(labelframe)
+            self.AmountEntry = ttk.Entry(labelframe, width=40)
+
+            
+            
+
             DetailsLabel = ttk.Label(labelframe, text=lang.RegistDetailsText)
-            self.DetailsEntry = Text(labelframe)
+            self.DetailsEntry = Text(labelframe, width=35, height=10)
             PictureSelectLabel = ttk.Label(labelframe, text=lang.RegistPictureSelectText)
             PathFrame = ttk.Frame(labelframe)
             PictureSelectButton = ttk.Button(PathFrame, text=lang.Reference, command=lambda:[self.GetFilePath()])
-            self.PathBox = ttk.Entry(PathFrame)
-            ConfirmButton = ttk.Button(labelframe, text=lang.RegistConfirmButtonText)
+            self.PathBox = ttk.Entry(PathFrame, width=25)
+            ConfirmButton = ttk.Button(labelframe, text=lang.RegistConfirmButtonText, command=lambda:[self.RegistConfirm()])
+
+            ClaimFrame = ttk.Frame(labelframe)
+            ClaimLabel = ttk.Label(labelframe, text = lang.RegistClaimLabelText)
+            self.ClaimPartLabel1 = ttk.Label(ClaimFrame, text = lang.RegistUser1 + str(self.ClaimValue.get()))
+            self.ClaimPartLabel2 = ttk.Label(ClaimFrame, text = lang.RegistUser2 + str(100 - self.ClaimValue.get()))
+            self.ClaimEntry = Scale(ClaimFrame, length=250, orient=HORIZONTAL, to=100, resolution=5, variable=self.ClaimValue, command=lambda ClaimValue: [self.WriteClaimPer()], showvalue="FALSE")
+            
 
             # ここから配置
             labelframe.pack()
@@ -287,8 +247,11 @@ class main():
             self.TitleEntry.grid(row=0, column=1, padx=10, pady=10)
             AmountLabel.grid(row=1, column=0, padx=10, pady=10)
             self.AmountEntry.grid(row=1, column=1, padx=10, pady=10)
+            ClaimFrame.grid(row=2, column=1, padx=10, pady=10)
             ClaimLabel.grid(row=2, column=0, padx=10, pady=10)
-            self.ClaimEntry.grid(row=2, column=1, padx=10, pady=10)
+            self.ClaimEntry.grid(row=1, column=0, padx=10, columnspan=3)
+            self.ClaimPartLabel1.grid(row=0, column=0)
+            self.ClaimPartLabel2.grid(row=0, column=2)
             DetailsLabel.grid(row=3, column=0, padx=10, pady=10)
             self.DetailsEntry.grid(row=3, column=1, padx=10, pady=10)
             PictureSelectLabel.grid(row=4, column=0, padx=10, pady=10)
@@ -298,8 +261,82 @@ class main():
             ConfirmButton.grid(row=5, column=1, padx=10, pady=10)
         else:
             pass
+    def WriteClaimPer(self):
+        a = self.ClaimValue.get()
+        self.ClaimPartLabel1["text"] = lang.RegistUser1 + str(a) + "%"
+        self.ClaimPartLabel2["text"] = lang.RegistUser2 + str(100 - a) + "%"
+    
+    def RegistConfirm(self):
+        a = self.GetRegistValues()
+        try:
+            if re.match(r'Error：*', a):
+                messagebox.showerror("Error", a)
+                root.lower()
+                return
+        except:
+            pass
+        b = self.WriteToDB(tuple(a))
+        messagebox.showinfo(b, b)
+    
+    def WriteToDB(self, Data):
+        con = sqlite3.connect(DBName)
+        cur = con.cursor()
+        sql = f"INSERT INTO AllRecords values {Data}"
+        cur.execute(sql)
+        con.commit()
+        con.close()
+        return lang.RegistOK
+            
+    
+    def GetRegistValues(self):
+        # リストに取得したデータを入力、DBへのちに入力
+        # 空のリスト
+        Value = []
+
+        # ハッシュ値生成
+        time = str(datetime.datetime.now().year)+str(datetime.datetime.now().month)+str(datetime.datetime.now().day)+str(datetime.datetime.now().hour)+str(datetime.datetime.now().minute)+str(datetime.datetime.now().second)+str(datetime.datetime.now().microsecond)
+        timehash = hash(time)
+
+        # 生成したハッシュ値をリストに追加
+        Value.append(timehash)
+
+        # タイトルの値を取得、リストに追加
+        a = self.TitleEntry.get()
+        if re.match(r'^\s*$', a) == None:
+            Value.append(a)
+        else:
+            return "Error：" + lang.RegistTitleErrorMessage
+        # 金額を取得、リストに追加
+        b = self.AmountEntry.get()
+        if re.match(r'^\s*$', b) == None:
+            Value.append(b)
+        else:
+            return "Error：" + lang.RegistAmountErrorMessage
+        # 分配割合を取得、リストに追加
+        Value.append(self.ClaimValue.get())
+        # 詳細情報を取得、改行を置き換え、リストに追加。
+        Raw = self.DetailsEntry.get("1.0", "end"+"-1c")
+        Data = Raw.replace("\n", "*kaigyo*")
+        Value.append(Data)
+        
+        
+        # レシートパスを取得、リストに追加
+        # ☆☆☆☆☆☆☆☆☆アプリ内のパスに保存して、そのパスを入力するほうが管理が楽だと思う。というかそうするべきだと思う。
+        Value.append(self.PathBox.get())
+
+
+        Value.append(self.UserID)
+        # 登録年を取得
+        Value.append(str(datetime.datetime.now().year))
+        # 登録月を取得
+        Value.append(str(datetime.datetime.now().month))
+        # 登録日を取得
+        Value.append(str(datetime.datetime.now().day))
+        return Value
+    
     def GetFilePath(self):
-        FilePath = filedialog.askopenfilename()
+        FilePath = filedialog.askopenfilename(filetypes=[('pdf', "*.pdf"), ("jpg", "*.jpg")])
+        root.lower()
         self.PathBox.delete(0, END)
         self.PathBox.insert(END, FilePath)
         
