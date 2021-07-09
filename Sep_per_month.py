@@ -19,7 +19,7 @@ except:
     pass
 try:
     # すべての記録を登録しておくテーブル
-    cur.execute("""CREATE TABLE AllRecords (ID integer, Title text, Amount integer, ClaimPer integer, Details text, Path text, User text, Year integer, month integer, day integer)""")
+    cur.execute("""CREATE TABLE AllRecords (ID integer, Title text, Amount integer, ClaimPer integer, Details text, Path text, User text, YearMonth integer, day integer)""")
 except:
     pass
 # 以下予備。
@@ -115,10 +115,8 @@ class Language():
         self.CEWindowTitle = "確認、編集"
         # 確認ウインドウの検索ラベルフレームのテキスト
         self.CESearchFormsText = "検索フォーム"
-        # 確認ウインドウの検索月入力のためのテキスト
-        self.CEMonthEntryText = "月を入力"
-        # 検索ウインドウの検索年入力のためのテキスト
-        self.CEYearEntryText = "年を入力"
+        # 検索ウインドウの検索年-月入力のためのテキスト
+        self.CEYearEntryText = "年-月を選択"
         # 検索ウインドウの検索ボタン用のテキスト
         self.CESearchText = "検索"
         # 検索ウインドウの結果表示ラベルフレームのテキスト
@@ -145,6 +143,8 @@ class Language():
         self.RegistAmountErrorMessage = "金額が未入力です。"
         # 登録画面の書き込みOKメッセージ
         self.RegistOK = "完了しました。"
+        # 登録画面の書き込みNGメッセージ
+        self.RegistNG = "失敗しました。"
     def English(self):
         pass
     def Tame(self):
@@ -276,16 +276,32 @@ class main():
         except:
             pass
         b = self.WriteToDB(tuple(a))
-        messagebox.showinfo(b, b)
+        if b == "OK":
+            messagebox.showinfo("OK", lang.RegistOK)
+            root.lower()
+            self.ClearForms()
+        else:
+            messagebox.showerror("NG", lang.RegistNG)
+            root.lower()
+        
+    def ClearForms(self):
+        self.TitleEntry.delete(0, "end")
+        self.AmountEntry.delete(0, "end")
+        self.DetailsEntry.delete("1.0", "end")
+        self.PathBox.delete(0, "end")
+        pass
     
     def WriteToDB(self, Data):
-        con = sqlite3.connect(DBName)
-        cur = con.cursor()
-        sql = f"INSERT INTO AllRecords values {Data}"
-        cur.execute(sql)
-        con.commit()
-        con.close()
-        return lang.RegistOK
+        try:
+            con = sqlite3.connect(DBName)
+            cur = con.cursor()
+            sql = f"INSERT INTO AllRecords values {Data}"
+            cur.execute(sql)
+            con.commit()
+            con.close()
+            return "OK"
+        except:
+            return "NG"
             
     
     def GetRegistValues(self):
@@ -326,10 +342,9 @@ class main():
 
 
         Value.append(self.UserID)
-        # 登録年を取得
-        Value.append(str(datetime.datetime.now().year))
-        # 登録月を取得
-        Value.append(str(datetime.datetime.now().month))
+        # 登録年、月を取得
+        Value.append(str(datetime.datetime.now().year) + "-" + str(datetime.datetime.now().month))
+
         # 登録日を取得
         Value.append(str(datetime.datetime.now().day))
         return Value
@@ -346,25 +361,54 @@ class main():
         if self.subwindow == None or not self.subwindow.winfo_exists():
             self.subwindow = Toplevel(root)
             self.subwindow.title(lang.CEWindowTitle)
+
+            # データベースに登録されている月と年を取得
+            a = self.GetDayandYear()
+
             # ここからパーツ
             SearchForms = ttk.Labelframe(self.subwindow, text=lang.CESearchFormsText)
             self.YearPull = ttk.Combobox(SearchForms)
-            self.MonthPull = ttk.Combobox(SearchForms)
+            self.YearPull["values"] = a[0]
             YearLabel = ttk.Label(SearchForms, text=lang.CEYearEntryText)
-            MonthLabel = ttk.Label(SearchForms, text=lang.CEMonthEntryText)
-            SearchButton = ttk.Button(SearchForms, text=lang.CESearchText)
-            SearchedLists = ttk.Labelframe(self.subwindow, text=lang.CEResult)
+            SearchButton = ttk.Button(SearchForms, text=lang.CESearchText, command=lambda:[self.CEResultShow(self.YearPull.get())])
+            self.SearchedLists = ttk.Labelframe(self.subwindow, text=lang.CEResult)
             # ここから配置
             SearchForms.pack()
             self.YearPull.grid(row=0, column=1, padx=10, pady=10)
-            self.MonthPull.grid(row=1, column=1, padx=10, pady=10)
             YearLabel.grid(row=0, column=0, padx=10, pady=10)
-            MonthLabel.grid(row=1, column=0, padx=10, pady=10)
             SearchButton.grid(row=2, column=1, padx=10, pady=10)
-            SearchedLists.pack()
+            self.SearchedLists.pack()
             
         else:
             pass
+    def GetDayandYear(self):
+        con = sqlite3.connect(DBName)
+        cur = con.cursor()
+        sql = f"SELECT DISTINCT YearMonth FROM AllRecords"
+        cur.execute(sql)
+        a = cur.fetchall()
+        con.commit()
+        con.close()
+        return a
+
+    def CEResultShow(self, YearMonth):
+        a = self.CEGetData(YearMonth)
+        
+        for i in range(len(a)):
+            b = ttk.Label(self.SearchedLists, text=a[i][1])
+            b.pack()
+        pass
+
+    def CEGetData(self, YearMonth):
+        con = sqlite3.connect(DBName)
+        cur = con.cursor()
+        sql = f"SELECT * FROM AllRecords WHERE YearMonth = '{YearMonth}'"
+        cur.execute(sql)
+        a = cur.fetchall()
+        con.commit()
+        con.close()
+        return a
+    
     def Settings(self):
         if self.subwindow == None or not self.subwindow.winfo_exists():
             self.subwindow = Toplevel(root)
