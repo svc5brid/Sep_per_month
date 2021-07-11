@@ -16,3 +16,14 @@ pdf、csvでの出力
 ・設定
 言語の変更
 テーマの変更
+
+初期情報
+1人目
+Name:User1
+ID:ABCD
+Password:1234
+
+2人目
+Name:User2
+ID:EFGH
+Password:5678
